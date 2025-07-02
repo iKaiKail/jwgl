@@ -9,12 +9,15 @@
 如需选择导出其他学期成绩重新查询导出即可
 如果用不了请邮箱反馈或者添加微信wxuid_ikaikail联系
 
-<img width="100" alt="1" src="https://github.com/user-attachments/assets/11c73548-d232-4b3b-bbca-6e1ac5439c4e" />
-
-<img width="100" alt="2" src="https://github.com/user-attachments/assets/5ccdd3de-1020-408a-b2fb-2d8a44407656" />
-
-<img width="100" alt="3" src="https://github.com/user-attachments/assets/4f3274e2-3063-47c6-8921-2494b7e40ce7" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a55458a8-26fc-4bad-b60a-e48c94d5ff23" alt="1" />
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/36d33354-5a23-4329-a3d6-0af5bcd3f2f7" alt="2" />
+</p>
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/fdeed66b-18a4-4281-ab62-7eda6ec7761f" alt="3" />
+</p>
 
 ### 脚本核心功能
 脚本的核心功能是添加一个按钮，允许用户一键导出包含详细成绩分项信息的Excel文件（.xls格式），而不是页面上展示的简化成绩信息。
