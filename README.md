@@ -8,6 +8,10 @@
 点击后，浏览器会自动下载一个xls文件，里面就是所有的成绩
 如需选择导出其他学期成绩重新查询导出即可
 如果用不了请邮箱反馈或者添加微信wxuid_ikaikail联系
+<img width="100" alt="xwzf4ven3xxnt1lbwqb5gjbsiuok" src="https://github.com/user-attachments/assets/11c73548-d232-4b3b-bbca-6e1ac5439c4e" />
+![y1ssqmkj6v7hmzgnscmzlxxwmjyn](https://github.com/user-attachments/assets/5ccdd3de-1020-408a-b2fb-2d8a44407656)
+<img width="100" alt="pi3l666whe6ibjv0mdxo3ppcpsmf" src="https://github.com/user-attachments/assets/4f3274e2-3063-47c6-8921-2494b7e40ce7" />
+
 
 ### 脚本核心功能
 脚本的核心功能是添加一个按钮，允许用户一键导出包含详细成绩分项信息的Excel文件（.xls格式），而不是页面上展示的简化成绩信息。
