@@ -1,7 +1,7 @@
 # 方正教务系统成绩分项下载
 开箱即用链接：https://greasyfork.org/zh-CN/scripts/524383-%E6%96%B9%E6%AD%A3%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F%E6%88%90%E7%BB%A9%E5%88%86%E9%A1%B9%E4%B8%8B%E8%BD%BD
 
-这个脚本可以在使用方正教务系统的学校网站中添加一个"导出所有成绩"功能，特别针对成绩查询页面。下面首先是功能展示，其次我将详细解释脚本的原理和工作流程：
+这个脚本可以在使用方正教务系统的学校网站中添加一个"导出所有成绩"功能，特别针对成绩查询页面。
 
 ### 功能展示
 在方正教务系统中找到成绩查询界面
@@ -21,155 +21,70 @@
   <img src="https://github.com/user-attachments/assets/fdeed66b-18a4-4281-ab62-7eda6ec7761f" alt="3" />
 </p>
 
-### 脚本核心功能
-脚本的核心功能是添加一个按钮，允许用户一键导出包含详细成绩分项信息的Excel文件（.xls格式），而不是页面上展示的简化成绩信息。
 
+## 功能概述
+这款专为方正教务系统设计的用户脚本，让您能够一键导出包含**详细成绩分项**的Excel文件，帮助您全面了解期末成绩构成，避免被"穿小鞋"的情况发生。
 
-### 脚本原理详解
+### 核心功能：
+- 🔍 **一键导出所有成绩分项**（平时成绩、期末成绩、考勤等）
+- 🌐 **智能适配WebVPN环境**，自动处理路径问题
+- 📊 **导出完整Excel文件**，包含课程代码、学分、各项成绩等详细信息
+- ✅ **操作状态反馈**，实时显示导出成功/失败提示
+- 🚀 **无缝集成**，在教务系统界面添加专用导出按钮
 
-#### 1. 元信息声明（Metadata）
-```javascript
-// ==UserScript==
-// @name         方正教务系统成绩分项下载
-// @namespace    ikaikail@ikaikail.com
-// @version      1.3
-// ...
-// @match        *://jwgl.sxzy.edu.cn/jwglxt/cjcx/*
-// @match        *://jwgl.fafu.edu.cn/jwglxt/cjcx/*
-// ...（多个学校匹配规则）...
-// @match        *://jw.gzist.edu.cn/jwglxt/xtgl/cjcx/*
-// @require      https://code.jquery.com/jquery-3.6.0.min.js
-// ==/UserScript==
+## 技术亮点
+
+```mermaid
+graph LR
+A[用户点击导出按钮] --> B[获取当前学年/学期]
+B --> C[构建请求参数]
+C --> D[动态生成URL]
+D --> E[发送POST请求]
+E --> F{服务器响应}
+F -->|成功| G[下载Excel文件]
+F -->|失败| H[显示错误提示]
+G --> I[显示成功状态]
+H --> I
 ```
-- **@match**：定义了脚本生效的URL模式，匹配多个使用方正教务系统的学校
-- **@require**：加载jQuery库，用于DOM操作
-- **@version**：脚本版本号
-- **@downloadURL/@updateURL**：提供脚本的自动更新功能
 
-#### 2. 创建下载按钮
-```javascript
-const createDownloadButton = () => {
-    return $('<button>', {
-        type: 'button',
-        class: 'btn btn-primary btn-sm mx-2',
-        text: '导出所有成绩'
-    });
-};
-```
-- 使用jQuery创建一个按钮元素
-- 设置按钮样式为`btn btn-primary`（Bootstrap样式）
-- 按钮文本为"导出所有成绩"
+## 安装与使用
 
-#### 3. 文件下载功能
-```javascript
-const downloadFile = (blob, filename = `成绩单_${Date.now()}.xlsx`) => {
-    // 创建临时下载链接
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    
-    // 触发下载
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // 清理资源
-    URL.revokeObjectURL(url);
-};
-```
-- 接收服务器返回的文件数据（Blob对象）
-- 创建临时下载链接并触发下载
-- 文件名包含时间戳确保唯一性
-- 下载完成后清理临时资源
+### 安装步骤：
+1. 安装Tampermonkey浏览器扩展，确保打开允许运行用户脚本功能
+2. 点击https://greasyfork.org/zh-CN/scripts/524383-%E6%96%B9%E6%AD%A3%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F%E6%88%90%E7%BB%A9%E5%88%86%E9%A1%B9%E4%B8%8B%E8%BD%BD
+3. 点击安装此脚本，在新页面点击安装即可
+4. 刷新教务系统成绩查询页面
 
-#### 4. 导出请求处理（核心）
-```javascript
-const handleExport = async () => {
-    try {
-        // 获取学年和学期值
-        const xnm = document.getElementById('xnm').value;
-        const xqm = document.getElementById('xqm').value;
 
-        // 构建请求参数
-        const params = new URLSearchParams([
-            ['gnmkdmKey', 'N305005'], // 功能模块标识
-            ['xnm', xnm], // 学年
-            ['xqm', xqm], // 学期
-            ['dcclbh', 'JW_N305005_GLY'], // 导出模板标识
-            ...[ // 指定导出的列
-                'kcmc@课程名称',
-                'xnmmc@学年',
-                // ...其他列...
-                'xmblmc@成绩分项' // 关键：成绩分项信息
-            ].map(col => ['exportModel.selectCol', col]),
-            ['exportModel.exportWjgs', 'xls'], // 导出格式为Excel
-            ['fileName', '成绩单'] // 文件名
-        ]);
+### 使用方法：
+1. 登录教务系统，进入成绩查询页面
+2. 选择学年和学期
+3. 点击新增的 **"导出所有成绩"** 按钮
+4. 等待下载完成（系统会自动保存为Excel文件）
 
-        // 发送POST请求
-        const response = await fetch('/jwglxt/cjcx/cjcx_dcXsKccjList.html', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: params
-        });
+## 兼容性说明
 
-        // 处理响应
-        if (!response.ok) throw new Error(`服务器返回异常状态码: ${response.status}`);
-        
-        const blob = await response.blob();
-        downloadFile(blob);
-    } catch (error) {
-        // 错误处理
-        console.error('导出操作失败:', error);
-        alert(`导出失败: ${error.message}`);
-    }
-};
-```
-**关键点：**
-1. 获取当前选择的学年(`xnm`)和学期(`xqm`)
-2. 构建符合教务系统要求的POST参数：
-   - `gnmkdmKey`：标识成绩查询功能模块
-   - `dcclbh`：指定导出模板（包含成绩分项信息的模板）
-   - `exportModel.selectCol`：明确请求导出包含"成绩分项"(xmblmc)的完整数据
-3. 请求路径：`/jwglxt/cjcx/cjcx_dcXsKccjList.html`（教务系统标准导出接口）
-4. 设置导出格式为Excel(`xls`)
+| 环境         | 支持情况 | 备注                 |
+|--------------|----------|----------------------|
+| Chrome浏览器 | ✅ 完美支持 | 推荐使用最新版本     |
+| Firefox      | ✅ 支持    | 需安装Tampermonkey   |
+| Edge浏览器   | ✅ 支持    | 基于Chromium内核     |
+| Safari       | ⚠️ 部分支持 | 需启用用户脚本功能   |
+| WebVPN环境   | ✅ 完美支持 | 自动处理路径问题     |
 
-#### 5. 初始化与DOM检测
-```javascript
-// 初始化功能
-const init = () => {
-    // 查找查询按钮
-    const $searchButton = $('#search_go');
-    
-    // 创建并配置下载按钮
-    const $downloadButton = createDownloadButton()
-        .click(handleExport)
-        .prop('title', '导出包含所有成绩分项的完整数据');
+## 使用场景
 
-    // 插入按钮到页面
-    $searchButton.length > 0 ? 
-        $searchButton.after($downloadButton) : 
-        $('body').prepend($downloadButton);
-};
+1. **成绩分析**：了解各分项成绩占比，找出薄弱环节
+2. **成绩复核**：核对教师评分是否合理准确
+3. **学业规划**：全面了解自己的学习情况，制定提升计划
+4. **材料准备**：为奖学金申请、保研等准备成绩证明材料
 
-// 等待页面元素加载
-const checkDOM = () => {
-    if (document.getElementById('xnm') && document.getElementById('xqm')) {
-        init(); // 初始化
-    } else {
-        setTimeout(checkDOM, 300); // 继续等待
-    }
-};
+## 作者声明
+> **脚本作者：iKaiKail**  
+> 本工具开发旨在帮助学生更好地了解自己的学业情况，请合理合法使用。  
+> **未经授权，禁止商用！**  
+> 任何商业用途的行为都将被视为侵权行为。
 
-// 启动检测
-checkDOM();
-```
-- **DOM检测**：定期检查学年/学期选择框是否加载完成
-- **按钮插入**：找到查询按钮后插入导出按钮
-- **用户提示**：按钮添加title属性说明功能
 
 ### 为什么需要这个脚本？
 
